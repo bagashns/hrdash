@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+.env.local
+*.local
+
+# Logs / runtime
+*.log
+*.pid
+
+# OS
+desktop.ini
+
+# Sample CVs (privasi data kandidat — abaikan kecuali .gitkeep)
+data/sample_cvs/*
+!data/sample_cvs/.gitkeep
