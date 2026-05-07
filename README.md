@@ -1,88 +1,36 @@
-# HRDash — AI-Based CV Screening Platform
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-MVP Minggu 1 (Kelompok 8). Platform untuk membantu HR menyaring CV kandidat
-secara otomatis menggunakan parser rule-based + NLP, dengan tampilan
-dashboard yang clean & minimal.
+## Getting Started
 
-## Anggota Tim
-- Bagas Heningswara — M0405241070
-- Dhirendra Abisatya Arundaya — M0405241009
-- Syahidah Asma Wardana — M0405241040
-
-## Struktur Proyek
-
-```
-hrdash/
-├── backend/
-│   ├── main.py            # FastAPI entry point
-│   ├── parser/            # CV Parser (PDF / DOCX -> JSON)
-│   ├── scoring/           # AI Scoring (placeholder Minggu 1)
-│   └── api/               # HTTP endpoints
-├── frontend/
-│   ├── index.html         # Halaman Upload CV
-│   ├── dashboard.html     # Halaman Hasil Analisis
-│   └── assets/            # CSS / JS / gambar
-├── data/
-│   └── sample_cvs/        # Dataset CV uji (25 sampel)
-├── test_parser.py         # CLI demo parser
-├── requirements.txt
-└── README.md
-```
-
-## Persiapan
+First, run the development server:
 
 ```bash
-# 1. Buat virtual environment
-python -m venv venv
-venv\Scripts\activate          # Windows
-# source venv/bin/activate     # macOS / Linux
-
-# 2. Install dependensi
-pip install -r requirements.txt
-
-# 3. Download model spaCy (multilingual, untuk NER nama)
-python -m spacy download xx_ent_wiki_sm
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Menjalankan
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### A. Uji parser saja (CLI)
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```bash
-python test_parser.py data/sample_cvs/cv_budi.pdf
-```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Output: JSON dengan field `nama`, `email`, `telepon`, `pendidikan`,
-`pengalaman`, `skills` — sesuai spesifikasi PDF Bab 2.2.
+## Learn More
 
-### B. Jalankan server + frontend
+To learn more about Next.js, take a look at the following resources:
 
-```bash
-uvicorn backend.main:app --reload
-```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Buka:
-- `http://localhost:8000/`           — Halaman Upload CV
-- `http://localhost:8000/dashboard`  — Halaman Hasil Analisis
-- `http://localhost:8000/docs`       — Swagger UI (API documentation)
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Endpoints API
+## Deploy on Vercel
 
-| Method | Path           | Deskripsi                                     |
-|--------|----------------|-----------------------------------------------|
-| POST   | `/api/upload`  | Upload file CV (PDF/DOCX) -> kembalikan JSON  |
-| GET    | `/api/health`  | Health check                                  |
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## Tech Stack
-
-- **Backend:** Python 3.11+, FastAPI, Uvicorn
-- **Parser:** pdfplumber, python-docx, spaCy (xx_ent_wiki_sm), regex
-- **Fallback PDF unstructured:** PyMuPDF (tindak lanjut Minggu 2)
-- **Frontend:** HTML, CSS, JavaScript (vanilla)
-
-## Roadmap
-
-- [x] **Minggu 1** — Setup environment, CV Parser awal, dataset 25 CV, desain dashboard
-- [ ] **Minggu 2** — AI Candidate Scoring (cosine similarity), integrasi end-to-end, dashboard dinamis
-- [ ] **Minggu 3** — Internal testing & refinement
-- [ ] **Minggu 4** — User testing dengan calon HR
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
