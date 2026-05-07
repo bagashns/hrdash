@@ -9,15 +9,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+    
     if (companyName.trim().length < 3) {
-      alert('Nama perusahaan harus diisi minimal 3 karakter!');
+      setErrorMsg('Nama perusahaan harus diisi minimal 3 karakter!');
       return;
     }
     if (password.length < 4) {
-      alert('Password minimal 4 karakter!');
+      setErrorMsg('Password minimal 4 karakter!');
       return;
     }
 
@@ -31,7 +36,7 @@ export default function LoginPage() {
       // Check if company exists
       let { data: company, error: fetchError } = await supabase
         .from('companies')
-        .select('id, name')
+        .select('id, name, password')
         .ilike('name', nameToSave)
         .single();
 
@@ -42,14 +47,31 @@ export default function LoginPage() {
       if (isLogin) {
         // FLOW LOGIN
         if (!company) {
-          alert('Akun perusahaan belum terdaftar. Silakan registrasi terlebih dahulu.');
+          setErrorMsg('Akun perusahaan belum terdaftar. Silakan registrasi terlebih dahulu.');
           setIsLoading(false);
           return;
+        }
+        
+        // Check password
+        if (company.password && company.password !== password) {
+          setErrorMsg('Kata sandi salah. Silakan coba lagi.');
+          setIsLoading(false);
+          return;
+        } else if (!company.password) {
+          // Auto-set the password if it is null (for backward compatibility/first login)
+          const { error: updateError } = await supabase
+            .from('companies')
+            .update({ password: password })
+            .eq('id', company.id);
+            
+          if (updateError) {
+            console.error('Failed to update password for existing company');
+          }
         }
       } else {
         // FLOW REGISTER
         if (company) {
-          alert('Perusahaan ini sudah terdaftar. Silakan langsung login.');
+          setErrorMsg('Perusahaan ini sudah terdaftar. Silakan langsung login.');
           setIsLoading(false);
           return;
         }
@@ -57,13 +79,13 @@ export default function LoginPage() {
         // Create new company
         const { data: newCompany, error: insertError } = await supabase
           .from('companies')
-          .insert([{ name: nameToSave }])
+          .insert([{ name: nameToSave, password: password }])
           .select()
           .single();
           
         if (insertError) throw insertError;
         company = newCompany;
-        alert('Registrasi berhasil! Mengarahkan ke Dashboard...');
+        setSuccessMsg('Registrasi berhasil! Mengarahkan ke Dashboard...');
       }
 
       // Save to localStorage
@@ -73,7 +95,7 @@ export default function LoginPage() {
       // Redirect to dashboard
       router.push('/dashboard');
     } catch (err: any) {
-      alert('Terjadi kesalahan: ' + err.message);
+      setErrorMsg('Terjadi kesalahan: ' + err.message);
       setIsLoading(false);
     }
   };
@@ -105,6 +127,22 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-10">
+            {/* Error Message */}
+            {errorMsg && (
+              <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                <svg className="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                {errorMsg}
+              </div>
+            )}
+
+            {/* Success Message */}
+            {successMsg && (
+              <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 text-sm font-medium flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                <svg className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                {successMsg}
+              </div>
+            )}
+            
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-sm font-bold text-slate-900 mb-2">
@@ -183,7 +221,11 @@ export default function LoginPage() {
               <p className="text-sm text-slate-600">
                 {isLogin ? 'Belum mendaftarkan perusahaan?' : 'Sudah mendaftarkan perusahaan?'}
                 <button
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setErrorMsg('');
+                    setSuccessMsg('');
+                  }}
                   className="ml-1.5 font-bold text-indigo-600 hover:text-indigo-500 transition-colors"
                 >
                   {isLogin ? 'Daftar sekarang' : 'Masuk di sini'}
